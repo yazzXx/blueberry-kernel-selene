@@ -2517,8 +2517,7 @@ retry:
 
 		if (__rt_mutex_futex_trylock(&pi_state->pi_mutex)) {
 			/* We got the lock. pi_state is correct. Tell caller. */
-			ret = 1;
-			goto out_unlock;
+			return 1;
 		}
 
 		/*
@@ -2545,8 +2544,7 @@ retry:
 			 * We raced against a concurrent self; things are
 			 * already fixed up. Nothing to do.
 			 */
-			ret = 1;
-			goto out_unlock;
+			return 1;
 		}
 		newowner = argowner;
 	}
@@ -2577,7 +2575,6 @@ retry:
 	 * itself.
 	 */
 	pi_state_update_owner(pi_state, newowner);
-	raw_spin_unlock_irq(&pi_state->pi_mutex.wait_lock);
 
 	return argowner == current;
 
@@ -2619,10 +2616,8 @@ handle_err:
 	/*
 	 * Check if someone else fixed it for us:
 	 */
-	if (pi_state->owner != oldowner) {
-		ret = argowner == current;
-		goto out_unlock;
-	}
+	if (pi_state->owner != oldowner)
+		return argowner == current;
 
 	/* Retry if err was -EAGAIN or the fault in succeeded */
 	if (!err)
@@ -2649,6 +2644,11 @@ handle_err:
 	return err;
 }
 
+=======
+	return err;
+}
+
+>>>>>>> 52b71186bdc0 (futex: Simplify fixup_pi_state_owner())
 static int fixup_pi_state_owner(u32 __user *uaddr, struct futex_q *q,
 				struct task_struct *argowner)
 {
