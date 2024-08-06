@@ -2644,11 +2644,7 @@ handle_err:
 	return err;
 }
 
-=======
-	return err;
-}
 
->>>>>>> 52b71186bdc0 (futex: Simplify fixup_pi_state_owner())
 static int fixup_pi_state_owner(u32 __user *uaddr, struct futex_q *q,
 				struct task_struct *argowner)
 {
@@ -2658,7 +2654,7 @@ static int fixup_pi_state_owner(u32 __user *uaddr, struct futex_q *q,
 	lockdep_assert_held(q->lock_ptr);
 
 	raw_spin_lock_irq(&pi_state->pi_mutex.wait_lock);
-	ret = __fixup_pi_state_owner(uaddr, q, argowner);
+	ret = fixup_pi_state_owner(uaddr, q, argowner);
 	raw_spin_unlock_irq(&pi_state->pi_mutex.wait_lock);
 	return ret;
 }
