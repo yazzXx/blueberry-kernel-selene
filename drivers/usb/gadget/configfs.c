@@ -1,3 +1,4 @@
+
 #include <linux/configfs.h>
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -154,25 +155,26 @@ struct gadget_config_name {
 	struct list_head list;
 };
 
-#define USB_MAX_STRING_WITH_NULL_LEN	(USB_MAX_STRING_LEN+1)
-
+#define MAX_USB_STRING_LEN	126
+#define MAX_USB_STRING_WITH_NULL_LEN	(MAX_USB_STRING_LEN+1)
 static int usb_string_copy(const char *s, char **s_copy)
 {
 	int ret;
 	char *str;
 	char *copy = *s_copy;
 	ret = strlen(s);
-	if (ret > USB_MAX_STRING_LEN)
+	if (ret > MAX_USB_STRING_LEN)
 		return -EOVERFLOW;
 
 	if (copy) {
 		str = copy;
 	} else {
-		str = kmalloc(USB_MAX_STRING_WITH_NULL_LEN, GFP_KERNEL);
+		str = kmalloc(MAX_USB_STRING_WITH_NULL_LEN, GFP_KERNEL);
 		if (!str)
 			return -ENOMEM;
 	}
-	strcpy(str, s);
+	strncpy(str, s, MAX_USB_STRING_WITH_NULL_LEN);
+
 	if (str[ret - 1] == '\n')
 		str[ret - 1] = '\0';
 	*s_copy = str;
@@ -1304,9 +1306,9 @@ static void purge_configs_funcs(struct gadget_info *gi)
 
 		cfg = container_of(c, struct config_usb_cfg, c);
 
-		list_for_each_entry_safe_reverse(f, tmp, &c->functions, list) {
+		list_for_each_entry_safe(f, tmp, &c->functions, list) {
 
-			list_move(&f->list, &cfg->func_list);
+			list_move_tail(&f->list, &cfg->func_list);
 			if (f->unbind) {
 				dev_dbg(&gi->cdev.gadget->dev,
 				         "unbind function '%s'/%p\n",
@@ -1753,7 +1755,7 @@ static const struct usb_gadget_driver configfs_driver_template = {
 	.suspend	= configfs_composite_suspend,
 	.resume		= configfs_composite_resume,
 
-	.max_speed	= USB_SPEED_SUPER_PLUS,
+	.max_speed	= USB_SPEED_SUPER,
 	.driver = {
 		.owner          = THIS_MODULE,
 		.name		= "configfs-gadget",
@@ -1953,7 +1955,7 @@ static struct config_group *gadgets_make(
 	gi->composite.unbind = configfs_do_nothing;
 	gi->composite.suspend = NULL;
 	gi->composite.resume = NULL;
-	gi->composite.max_speed = USB_SPEED_SUPER_PLUS;
+	gi->composite.max_speed = USB_SPEED_SUPER;
 
 	spin_lock_init(&gi->spinlock);
 	mutex_init(&gi->lock);

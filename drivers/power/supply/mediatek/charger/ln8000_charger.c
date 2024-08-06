@@ -2,6 +2,7 @@
  * ln8000-charger.c - Charger driver for LIONSEMI LN8000
  *
  * Copyright (C) 2021 Lion Semiconductor Inc.
+ * Copyright (C) 2021 XiaoMi, Inc.
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -1406,7 +1407,7 @@ static int ln8000_get_dev_role(struct i2c_client *client)
 
     dev_info(&client->dev,"%s: matched to %s\n", __func__, of_id->compatible);
 
-    return (int)of_id->data;
+    return (long)of_id->data;
 }
 
 static int ln8000_parse_dt(struct ln8000_info *info)

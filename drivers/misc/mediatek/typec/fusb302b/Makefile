@@ -1,7 +1,9 @@
+
 #
 # Makefile for the usb FUSB302 driver (if driver is inside kernel tree).
 #
 
+ccflags-y += -Wno-error
 ccflags-y += \
 		-DFSC_PLATFORM_LINUX \
 		-DFSC_HAVE_SNK \
