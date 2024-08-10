@@ -671,8 +671,8 @@ LDFLAGS		+= -plugin LLVMgold.so
 endif
 # use llvm-ar for building symbol tables from IR files, and llvm-dis instead
 # of objdump for processing symbol versions and exports
-LLVM_AR		:= llvm-ar
-LLVM_NM		:= llvm-nm
+LLVM_AR		:= /home/yaz/clang/bin/llvm-ar
+LLVM_NM		:= /home/yaz/clang/bin/llvm-nm
 export LLVM_AR LLVM_NM
 endif
 
